@@ -1,11 +1,11 @@
 import "./App.css";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import Login from "./components/Login";
-import Register from "./components/Register";
-import Index from "./components/Index";
-import Dashboard from "./components/Dashboard";
-import Profile from "./components/Profile";
-import NotFound from "./components/NotFound";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import Index from "./pages/Index";
+import Dashboard from "./pages/Dashboard";
+import Profile from "./pages/Profile";
+import NotFound from "./pages/NotFound";
 
 function App() {
   
