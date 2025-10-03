@@ -1,26 +1,28 @@
-# React starter kit with Appwrite
+🚀 NeuroGuard 5.0 – Hackathon Prototype
+🧠 Overview
 
-Kickstart your React development with this ready-to-use starter project integrated with [Appwrite](https://www.appwrite.io)
+NeuroGuard 5.0 (Transcendence Suite) is an AI-driven astronaut neurohealth monitoring system designed for long-duration space missions (e.g., Mars exploration).
 
-## 🚀Getting started
+This prototype demonstrates how real-time physiological and cognitive data can be processed by an AI engine and visualized in a mission-style dashboard for astronauts and mission control.
 
-###
-Clone the Project
-Clone this repository to your local machine using Git:
+The system provides:
 
-`git clone https://github.com/appwrite/starter-for-react`
+Fatigue & Stress Monitoring
 
-## 🛠️ Development guid
-1. **Configure Appwrite**<br/>
-   Navigate to `.env` and update the values to match your Appwrite project credentials.
-2. **Customize as needed**<br/>
-   Modify the starter kit to suit your app's requirements. Adjust UI, features, or backend
-   integrations as per your needs.
-3. **Install dependencies**<br/>
-   Run `npm install` to install all dependencies.
-4. **Run the app**<br/>
-   Start the project by running `npm run dev`.
+Sleep & Recovery Tracking
 
-## 💡 Additional notes
-- This starter project is designed to streamline your React development with Appwrite.
-- Refer to the [Appwrite documentation](https://appwrite.io/docs) for detailed integration guidance.
+Predictive Risk Scoring
+
+AI-Driven Countermeasure Recommendations
+
+✨ Core Features
+
+📊 NeuroHealth Dashboard – live view of fatigue, stress, and sleep debt.
+
+🤖 AI Recommendations – closed-loop suggestions like naps, circadian light shifts, or workload redistribution.
+
+🔍 Explainability Layer – simple reasoning behind each recommendation (e.g., “Low REM sleep → cortisol ↑ → fatigue risk +12%”).
+
+👩‍🚀 Multi-Crew Support (demo) – monitor multiple astronauts in one interface.
+
+📡 Real-Time Data Feed – JSON endpoint exposed via ngrok / hosted API.
