@@ -11,17 +11,15 @@
 // export { ID } from 'appwrite';
 
 
-import { Client, Account} from 'appwrite';
+import { Client, Account, Storage, ID } from 'appwrite';
 
-export const client = new Client();
+// Create client instance
+const client = new Client()
+    .setEndpoint('https://nyc.cloud.appwrite.io/v1') // Your API endpoint
+    .setProject('68dff8b30006d009926a'); // Your project ID
 
-client
-    .setEndpoint('https://nyc.cloud.appwrite.io/v1')
-    .setProject('68dff8b30006d009926a'); // Replace with your project ID
+// Services
+const account = new Account(client);
+const storage = new Storage(client);
 
- const account = new Account(client);
- const storage = new Storage(client);
-
-
-export { client, account, storage };
-export { ID } from 'appwrite';
+export { client, account, storage, ID };
