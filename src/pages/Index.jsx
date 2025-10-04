@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Brain, Zap, Shield, TrendingUp, ArrowRight, Menu, X, CheckCircle, Activity, Moon, Heart } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const Index = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -14,13 +17,11 @@ const Index = () => {
   }, []);
 
   const handleGetStarted = () => {
-    // Navigate to login/signup
-    console.log('Navigate to signup');
+    navigate('/register');
   };
 
   const handleLogin = () => {
-    // Navigate to login
-    console.log('Navigate to login');
+   navigate('/dashboard');
   };
 
   const features = [
@@ -305,7 +306,7 @@ const Index = () => {
       {/* Footer */}
       <footer className="border-t border-slate-800 py-8 px-6">
         <div className="max-w-7xl mx-auto text-center text-slate-400">
-          <p className="mb-2">© 2024 AstroGuard Pro Edition - Team Stardust Collective</p>
+          <p className="mb-2">© 2025 AstroGuard Pro - Team Stardust Collective</p>
           <p className="text-sm">Next-Generation Cognitive Monitoring for Space Missions</p>
         </div>
       </footer>

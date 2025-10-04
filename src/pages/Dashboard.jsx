@@ -11,7 +11,7 @@ const Dashboard = () => {
   const astronaut = {
     name: "Dr. Walter White",
     id: "AST-001",
-    imageUrl: null // Set to null to show default avatar, or provide URL for custom image
+    imageUrl: 'https://res.cloudinary.com/djewcevo2/image/upload/v1759328043/photo_4_2025-10-01_19-43-23_ivmqsp.jpg'
   };
 
   // Dummy data for EEG waves
