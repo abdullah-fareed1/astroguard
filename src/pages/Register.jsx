@@ -67,6 +67,7 @@ const Register = () => {
         file
       );
 
+      
       // Get a URL for the uploaded image
       const fileId = uploadedFile.$id;
 
