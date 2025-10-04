@@ -6,7 +6,7 @@ const Sidebar = ({ currentPage = 'dashboard' }) => {
 
   const menuItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, path: '/dashboard' },
-    { id: 'account', label: 'Account', icon: User, path: '/account' },
+    { id: 'profile', label: 'Profile', icon: User, path: '/profile' },
   ];
 
   const handleLogout = () => {
@@ -91,8 +91,8 @@ const Sidebar = ({ currentPage = 'dashboard' }) => {
 
           {/* Version Info */}
           <div className="mt-4 px-6 py-3 bg-slate-800/50 rounded-xl border border-slate-700/50">
-            <p className="text-xs text-slate-400">Version 2.4.1</p>
-            <p className="text-xs text-slate-500">Neural Link Protocol</p>
+            <p className="text-xs text-slate-400">Version 0.1</p>
+            <p className="text-xs text-slate-500">Team Stardust Collective</p>
           </div>
         </div>
       </div>
