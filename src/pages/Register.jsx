@@ -15,30 +15,6 @@ const Register = () => {
   // const [profileImg, setProfileImg] = useState(""); // for profile_img
   const [message, setMessage] = useState("");
 
-  const handleSignup = async (e) => {
-    e.preventDefault();
-
-    try {
-      // Create user with email, password and username (stored as `name`)
-      const user = await account.create(
-        ID.unique(),
-        email,
-        password,
-        username
-      );
-
-      // Add extra fields into prefs
-      await account.updatePrefs({
-        profile_img: profileImg,
-        username: username, // optional, for easier access in prefs too
-      });
-
-      setMessage(`User created: ${user.$id}`);
-    } catch (err) {
-      setMessage(`Error: ${err.message}`);
-    }
-  };
-
 
 
   const handleImageChange = (e) => {
@@ -59,52 +35,76 @@ const Register = () => {
   };
 
 
-  const handleImageUpload = async (file) => {
-    try {
-      const uploadedFile = await storage.createFile(
-        "68e129ca002b0931d2ca", // your bucket ID
-        ID.unique(),
-        file
-      );
-      
-      // Get a URL for the uploaded image
-      const fileId = uploadedFile.$id;
+  // const handleSubmit = async (e) => {
 
-      // Option A: Preview/download link
-      const fileUrl = storage.getFileView("profile-images", fileId);
+  //   e.preventDefault();
 
-      // Save fileUrl in prefs
-      await account.updatePrefs({
-        profileImage: fileUrl.href, // 👈 URL is stored in prefs
-        username: username,
-      });
+  //   try {
+  //     // Create user with email, password and username (stored as `name`)
+  //     const user = await account.create(
+  //       ID.unique(),
+  //       email,
+  //       password,
+  //       username
+  //     );
 
-      console.log("Profile image uploaded and linked:", fileUrl.href);
-    } catch (error) {
-      console.error("Error uploading file:", error);
-    }
-  };
+  //     // handleImageUpload(profileImage);// null pointer maybe
+  //     setMessage(`User created: ${user.$id, user.name}`);
+  //   } catch (err) {
+  //     setMessage(`Error: ${err.message}`);
+  //   }
+  //   // Add your registration logic here
+  // };
 
   const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    e.preventDefault();
+  if (password !== confirmPassword) {
+    setMessage("Passwords do not match!");
+    return;
+  }
 
-    try {
-      // Create user with email, password and username (stored as `name`)
-      const user = await account.create(
-        ID.unique(),
-        email,
-        password,
-        username
+  try {
+    // 1. Create Appwrite user
+    const user = await account.create(
+      ID.unique(),
+      email,
+      password,
+      username
+    );
+
+    let uploadedUrl = null;
+
+    // 2. Upload to Cloudinary if image is selected
+    if (profileImage) {
+      const formData = new FormData();
+      formData.append("file", profileImage);
+      formData.append("upload_preset", "your_unsigned_preset"); // Cloudinary preset
+
+      const res = await fetch(
+        `https://api.cloudinary.com/v1_1/YOUR_CLOUD_NAME/image/upload`,
+        {
+          method: "POST",
+          body: formData,
+        }
       );
 
-      handleImageUpload(profileImage);// null pointer maybe
-      setMessage(`User created: ${user.$id, user.$email}`);
-    } catch (err) {
-      setMessage(`Error: ${err.message}`);
+      const data = await res.json();
+      uploadedUrl = data.secure_url;
+
+      // 3. Save Cloudinary URL to Appwrite user prefs
+      await account.updatePrefs({
+        profile_img: uploadedUrl,
+        username: username,
+      });
     }
-    // Add your registration logic here
-  };
+
+    setMessage(`✅ User created: ${user.name}`);
+  } catch (err) {
+    setMessage(`❌ Error: ${err.message}`);
+  }
+};
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center p-4 relative overflow-hidden">
@@ -184,7 +184,7 @@ const Register = () => {
                 JPG, PNG or GIF (Max. 5MB)
               </p>
             </div>
-            {message && <p>{message}</p>}
+            {message && <p className='text-sm text-fuchsia-200 text-center'>{message}</p>}
             <div>
               <label htmlFor="fullName" className="block text-sm font-medium text-slate-300 mb-2">
                 username
