@@ -1,23 +1,108 @@
 import React, { useState } from 'react';
+import { Upload, User, X } from 'lucide-react';
+import { account, ID, storage } from "../lib/appwrite"; // adjust path if needed
+
 
 const Register = () => {
-  const [formData, setFormData] = useState({
-    fullName: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-    astronautId: ''
-  });
+  const [profileImage, setProfileImage] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
 
-  const handleInputChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [username, setUsername] = useState(""); // for name
+  // const [profileImg, setProfileImg] = useState(""); // for profile_img
+  const [message, setMessage] = useState("");
+
+  const handleSignup = async (e) => {
+    e.preventDefault();
+
+    try {
+      // Create user with email, password and username (stored as `name`)
+      const user = await account.create(
+        ID.unique(),
+        email,
+        password,
+        username
+      );
+
+      // Add extra fields into prefs
+      await account.updatePrefs({
+        profile_img: profileImg,
+        username: username, // optional, for easier access in prefs too
+      });
+
+      setMessage(`User created: ${user.$id}`);
+    } catch (err) {
+      setMessage(`Error: ${err.message}`);
+    }
   };
 
-  const handleSubmit = () => {
-    console.log('Register submitted:', formData);
+
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setProfileImage(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const removeImage = () => {
+    setProfileImage(null);
+    setImagePreview(null);
+  };
+
+
+  const handleImageUpload = async (file) => {
+    try {
+      const uploadedFile = await storage.createFile(
+        "68e129ca002b0931d2ca", // your bucket ID
+        ID.unique(),
+        file
+      );
+
+      // Get a URL for the uploaded image
+      const fileId = uploadedFile.$id;
+
+      // Option A: Preview/download link
+      const fileUrl = storage.getFileView("profile-images", fileId);
+
+      // Save fileUrl in prefs
+      await account.updatePrefs({
+        profileImage: fileUrl.href, // 👈 URL is stored in prefs
+        username: username,
+      });
+
+      console.log("Profile image uploaded and linked:", fileUrl.href);
+    } catch (error) {
+      console.error("Error uploading file:", error);
+    }
+  };
+
+  const handleSubmit = async (e) => {
+
+    e.preventDefault();
+
+    try {
+      // Create user with email, password and username (stored as `name`)
+      const user = await account.create(
+        ID.unique(),
+        email,
+        password,
+        username
+      );
+
+      handleImageUpload(profileImage);// null pointer maybe
+      setMessage(`User created: ${user.$id, user.$email}`);
+    } catch (err) {
+      setMessage(`Error: ${err.message}`);
+    }
     // Add your registration logic here
   };
 
@@ -26,10 +111,10 @@ const Register = () => {
       {/* Animated background stars */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute w-1 h-1 bg-white rounded-full top-1/4 left-1/4 animate-pulse"></div>
-        <div className="absolute w-1 h-1 bg-white rounded-full top-3/4 left-3/4 animate-pulse" style={{animationDelay: '1s'}}></div>
-        <div className="absolute w-1 h-1 bg-blue-300 rounded-full top-1/2 left-1/2 animate-pulse" style={{animationDelay: '2s'}}></div>
-        <div className="absolute w-1 h-1 bg-purple-300 rounded-full top-1/3 right-1/4 animate-pulse" style={{animationDelay: '0.5s'}}></div>
-        <div className="absolute w-1 h-1 bg-white rounded-full bottom-1/4 right-1/3 animate-pulse" style={{animationDelay: '1.5s'}}></div>
+        <div className="absolute w-1 h-1 bg-white rounded-full top-3/4 left-3/4 animate-pulse" style={{ animationDelay: '1s' }}></div>
+        <div className="absolute w-1 h-1 bg-blue-300 rounded-full top-1/2 left-1/2 animate-pulse" style={{ animationDelay: '2s' }}></div>
+        <div className="absolute w-1 h-1 bg-purple-300 rounded-full top-1/3 right-1/4 animate-pulse" style={{ animationDelay: '0.5s' }}></div>
+        <div className="absolute w-1 h-1 bg-white rounded-full bottom-1/4 right-1/3 animate-pulse" style={{ animationDelay: '1.5s' }}></div>
       </div>
 
       {/* Register Card */}
@@ -54,16 +139,62 @@ const Register = () => {
 
           {/* Form Fields */}
           <div className="space-y-5">
+            {/* Profile Image Upload */}
+            <div>
+              <label className="block text-sm font-medium text-slate-300 mb-3">
+                Profile Picture
+              </label>
+              <div className="flex items-center gap-4">
+                {/* Image Preview */}
+                <div className="relative">
+                  <div className="w-20 h-20 rounded-full overflow-hidden bg-slate-900/50 border-2 border-slate-600 flex items-center justify-center">
+                    {imagePreview ? (
+                      <img src={imagePreview} alt="Profile preview" className="w-full h-full object-cover" />
+                    ) : (
+                      <User className="w-8 h-8 text-slate-500" />
+                    )}
+                  </div>
+                  {imagePreview && (
+                    <button
+                      onClick={removeImage}
+                      className="absolute -top-1 -right-1 w-6 h-6 bg-red-500 hover:bg-red-600 rounded-full flex items-center justify-center transition-colors"
+                    >
+                      <X className="w-4 h-4 text-white" />
+                    </button>
+                  )}
+                </div>
+
+                {/* Upload Button */}
+                <label className="flex-1 cursor-pointer">
+                  <div className="flex items-center justify-center gap-2 px-4 py-3 bg-slate-900/50 border border-slate-600 rounded-lg text-slate-300 hover:bg-slate-800/50 hover:border-purple-500/50 transition-all duration-200">
+                    <Upload className="w-4 h-4" />
+                    <span className="text-sm font-medium">
+                      {imagePreview ? 'Change Photo' : 'Upload Photo'}
+                    </span>
+                  </div>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageChange}
+                    className="hidden"
+                  />
+                </label>
+              </div>
+              <p className="text-xs text-slate-500 mt-2">
+                JPG, PNG or GIF (Max. 5MB)
+              </p>
+            </div>
+            {message && <p>{message}</p>}
             <div>
               <label htmlFor="fullName" className="block text-sm font-medium text-slate-300 mb-2">
-                Full Name
+                username
               </label>
               <input
                 id="fullName"
                 name="fullName"
                 type="text"
-                value={formData.fullName}
-                onChange={handleInputChange}
+                value={username}
+                onChange={e => setUsername(e.target.value)}
                 placeholder="Enter your full name"
                 className="w-full px-4 py-3 bg-slate-900/50 border border-slate-600 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
               />
@@ -77,8 +208,8 @@ const Register = () => {
                 id="email"
                 name="email"
                 type="email"
-                value={formData.email}
-                onChange={handleInputChange}
+                value={email}
+                onChange={e => setEmail(e.target.value)}
                 placeholder="Enter your email"
                 className="w-full px-4 py-3 bg-slate-900/50 border border-slate-600 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
               />
@@ -92,8 +223,8 @@ const Register = () => {
                 id="password"
                 name="password"
                 type="password"
-                value={formData.password}
-                onChange={handleInputChange}
+                value={password}
+                onChange={e => setPassword(e.target.value)}
                 placeholder="Enter your password"
                 className="w-full px-4 py-3 bg-slate-900/50 border border-slate-600 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
               />
@@ -107,24 +238,9 @@ const Register = () => {
                 id="confirmPassword"
                 name="confirmPassword"
                 type="password"
-                value={formData.confirmPassword}
-                onChange={handleInputChange}
+                value={confirmPassword}
+                onChange={e => setConfirmPassword(e.target.value)}
                 placeholder="Confirm your password"
-                className="w-full px-4 py-3 bg-slate-900/50 border border-slate-600 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
-              />
-            </div>
-
-            <div>
-              <label htmlFor="astronautId" className="block text-sm font-medium text-slate-300 mb-2">
-                Astronaut ID
-              </label>
-              <input
-                id="astronautId"
-                name="astronautId"
-                type="number"
-                value={formData.astronautId}
-                onChange={handleInputChange}
-                placeholder="Enter your astronaut ID"
                 className="w-full px-4 py-3 bg-slate-900/50 border border-slate-600 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
               />
             </div>
