@@ -9,8 +9,8 @@ const Dashboard = () => {
 
   // Astronaut data (this would come from your backend)
   const astronaut = {
-    name: "Dr. Sarah Mitchell",
-    id: "AST-2847",
+    name: "Dr. Walter White",
+    id: "AST-001",
     imageUrl: null // Set to null to show default avatar, or provide URL for custom image
   };
 
