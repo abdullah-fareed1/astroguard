@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { User, Mail, Lock, Calendar, Shield, Check, AlertCircle } from 'lucide-react';
+import { User, Mail, Lock, Calendar, Shield, Check, AlertCircle, Camera } from 'lucide-react';
 import Sidebar from '../components/Sidebar';
 
 const Profile = () => {
@@ -22,6 +22,8 @@ const Profile = () => {
 
   const [isSaving, setIsSaving] = useState(false);
   const [saveStatus, setSaveStatus] = useState({ show: false, type: '', message: '' });
+  const [selectedImage, setSelectedImage] = useState(astronautData.profileImage);
+  const [imageFile, setImageFile] = useState(null);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -29,6 +31,46 @@ const Profile = () => {
       ...prev,
       [name]: value
     }));
+  };
+
+  const handleImageSelect = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        setSaveStatus({
+          show: true,
+          type: 'error',
+          message: 'Please select a valid image file'
+        });
+        setTimeout(() => setSaveStatus({ show: false, type: '', message: '' }), 4000);
+        return;
+      }
+
+      // Validate file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        setSaveStatus({
+          show: true,
+          type: 'error',
+          message: 'Image size must be less than 5MB'
+        });
+        setTimeout(() => setSaveStatus({ show: false, type: '', message: '' }), 4000);
+        return;
+      }
+
+      setImageFile(file);
+      
+      // Create preview URL
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setSelectedImage(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const triggerImageSelect = () => {
+    document.getElementById('profile-image-input').click();
   };
 
   const handleSave = async (e) => {
@@ -68,6 +110,14 @@ const Profile = () => {
     }
 
     setIsSaving(true);
+    
+    // Here you would upload the image to your backend if a new image was selected
+    // Example:
+    // if (imageFile) {
+    //   const formData = new FormData();
+    //   formData.append('profileImage', imageFile);
+    //   await uploadProfileImage(formData);
+    // }
     
     // Simulate API call - replace with actual API call
     setTimeout(() => {
@@ -143,19 +193,40 @@ const Profile = () => {
               
               {/* Profile Image */}
               <div className="flex flex-col items-center mb-6">
-                <div className="w-32 h-32 rounded-full overflow-hidden bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center border-4 border-purple-400/30 shadow-lg mb-4">
-                  {astronautData.profileImage ? (
-                    <img 
-                      src={astronautData.profileImage} 
-                      alt={astronautData.name} 
-                      className="w-full h-full object-cover" 
-                    />
-                  ) : (
-                    <User className="w-16 h-16 text-white" />
-                  )}
+                <div className="relative group">
+                  <div className="w-32 h-32 rounded-full overflow-hidden bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center border-4 border-purple-400/30 shadow-lg mb-4">
+                    {selectedImage ? (
+                      <img 
+                        src={selectedImage} 
+                        alt={astronautData.name} 
+                        className="w-full h-full object-cover" 
+                      />
+                    ) : (
+                      <User className="w-16 h-16 text-white" />
+                    )}
+                  </div>
+                  
+                  {/* Camera Button Overlay */}
+                  <button
+                    type="button"
+                    onClick={triggerImageSelect}
+                    className="absolute bottom-4 right-0 w-10 h-10 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full flex items-center justify-center shadow-lg hover:from-purple-600 hover:to-blue-600 transition-all hover:scale-110 border-2 border-slate-900"
+                  >
+                    <Camera className="w-5 h-5 text-white" />
+                  </button>
+                  
+                  {/* Hidden File Input */}
+                  <input
+                    id="profile-image-input"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageSelect}
+                    className="hidden"
+                  />
                 </div>
                 <h3 className="text-xl font-bold text-center mb-1">{astronautData.name}</h3>
                 <p className="text-slate-400 text-sm">Astronaut</p>
+                <p className="text-xs text-slate-500 mt-2">Click the camera icon to change photo</p>
               </div>
 
               {/* Info Cards */}
