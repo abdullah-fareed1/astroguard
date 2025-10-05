@@ -3,12 +3,14 @@ import { Upload, User, X } from 'lucide-react';
 import { account, ID, storage } from "../lib/appwrite"; // adjust path if needed
 import { meta } from '@eslint/js';
 import { uploadImage } from '../utils/imageupload';
+import { useNavigate } from 'react-router-dom';
 
 
 const Register = () => {
   const [profileImage, setProfileImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
 
+  const navigate = useNavigate();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -37,51 +39,54 @@ const Register = () => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    // e.preventDefault();
 
-    if (password !== confirmPassword) {
-      setMessage("Passwords do not match!");
-      return;
-    }
+    // if (password !== confirmPassword) {
+    //   setMessage("Passwords do not match!");
+    //   return;
+    // }
 
-    try {
-      // 1. Create Appwrite user
-      const user = await account.create(
-        ID.unique(),
-        email,
-        password,
-        username
-      );
+    // try {
+    //   // 1. Create Appwrite user
+    //   const user = await account.create(
+    //     ID.unique(),
+    //     email,
+    //     password,
+    //     username
+    //   );
 
-      let uploadedUrl = null;
+    //   let uploadedUrl = null;
 
-      // 2. Upload to Cloudinary if image is selected
-      if (!profileImage) {
-        console.log("No image file selected.");
-        return;
-      }
+    //   // 2. Upload to Cloudinary if image is selected
+    //   if (!profileImage) {
+    //     console.log("No image file selected.");
+    //     return;
+    //   }
 
-      console.log("Image selected" + profileImage);
+    //   console.log("Image selected" + profileImage);
 
-      try {
-        const uploadedUrl = await uploadImage(profileImage);
-        console.log("Uploaded Image URL received:", uploadedUrl);
+    //   try {
+    //     const uploadedUrl = await uploadImage(profileImage);
+    //     console.log("Uploaded Image URL received:", uploadedUrl);
 
-      } catch (error) {
-        console.error("Error in uploadingImage :" + error)
-      }
+    //   } catch (error) {
+    //     console.error("Error in uploadingImage :" + error)
+    //   }
 
-      // 3. Save Cloudinary URL to Appwrite user prefs
-      await account.updatePrefs({
-        profile_img: uploadedUrl,
-        username: username,
-      });
+    //   // 3. Save Cloudinary URL to Appwrite user prefs
+    //   await account.updatePrefs({
+    //     profile_img: uploadedUrl,
+    //   });
 
 
-      setMessage(`✅ User created: ${user.name}`);
-    } catch (err) {
-      setMessage(`❌ Error: ${err.message}`);
-    }
+    //   const getUser = await account.get();
+    //   console.log("getting user from appwrite :" + getUser);
+    //   console.log(getUser.prefs);
+
+    //   setMessage(`✅ User created: ${user.name}`);
+    // } catch (err) {
+    //   setMessage(`❌ Error: ${err.message}`);
+    // }
   };
 
 
@@ -225,7 +230,7 @@ const Register = () => {
             </div>
 
             <button
-              onClick={handleSubmit}
+              onClick={()=>{handleSubmit,  navigate('/Dashboard')}}
               className="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold py-3 px-4 rounded-lg hover:from-blue-600 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-slate-800 transform transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-purple-500/30"
             >
               Register
