@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Upload, User, X } from 'lucide-react';
 import { account, ID, storage } from "../lib/appwrite"; // adjust path if needed
+import { meta } from '@eslint/js';
+import { uploadImage } from '../utils/imageupload';
 
 
 const Register = () => {
@@ -34,76 +36,53 @@ const Register = () => {
     setImagePreview(null);
   };
 
-
-  // const handleSubmit = async (e) => {
-
-  //   e.preventDefault();
-
-  //   try {
-  //     // Create user with email, password and username (stored as `name`)
-  //     const user = await account.create(
-  //       ID.unique(),
-  //       email,
-  //       password,
-  //       username
-  //     );
-
-  //     // handleImageUpload(profileImage);// null pointer maybe
-  //     setMessage(`User created: ${user.$id, user.name}`);
-  //   } catch (err) {
-  //     setMessage(`Error: ${err.message}`);
-  //   }
-  //   // Add your registration logic here
-  // };
-
   const handleSubmit = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  if (password !== confirmPassword) {
-    setMessage("Passwords do not match!");
-    return;
-  }
+    if (password !== confirmPassword) {
+      setMessage("Passwords do not match!");
+      return;
+    }
 
-  try {
-    // 1. Create Appwrite user
-    const user = await account.create(
-      ID.unique(),
-      email,
-      password,
-      username
-    );
-
-    let uploadedUrl = null;
-
-    // 2. Upload to Cloudinary if image is selected
-    if (profileImage) {
-      const formData = new FormData();
-      formData.append("file", profileImage);
-      formData.append("upload_preset", "your_unsigned_preset"); // Cloudinary preset
-
-      const res = await fetch(
-        `https://api.cloudinary.com/v1_1/YOUR_CLOUD_NAME/image/upload`,
-        {
-          method: "POST",
-          body: formData,
-        }
+    try {
+      // 1. Create Appwrite user
+      const user = await account.create(
+        ID.unique(),
+        email,
+        password,
+        username
       );
 
-      const data = await res.json();
-      uploadedUrl = data.secure_url;
+      let uploadedUrl = null;
+
+      // 2. Upload to Cloudinary if image is selected
+      if (!profileImage) {
+        console.log("No image file selected.");
+        return;
+      }
+
+      console.log("Image selected" + profileImage);
+
+      try {
+        const uploadedUrl = await uploadImage(profileImage);
+        console.log("Uploaded Image URL received:", uploadedUrl);
+
+      } catch (error) {
+        console.error("Error in uploadingImage :" + error)
+      }
 
       // 3. Save Cloudinary URL to Appwrite user prefs
       await account.updatePrefs({
         profile_img: uploadedUrl,
         username: username,
       });
-    }
 
-    setMessage(`✅ User created: ${user.name}`);
-  } catch (err) {
-    setMessage(`❌ Error: ${err.message}`);
-  }
-};
+
+      setMessage(`✅ User created: ${user.name}`);
+    } catch (err) {
+      setMessage(`❌ Error: ${err.message}`);
+    }
+  };
 
 
   return (
