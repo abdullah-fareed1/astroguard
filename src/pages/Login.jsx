@@ -74,9 +74,7 @@ const Login = () => {
 
             <button
               // onClick={handleSubmit}
-              onClick={
-                
-                () => navigate("/dashboard")}
+              onClick={()=>navigate("/dashboard")}
               className="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold py-3 px-4 rounded-lg hover:from-blue-600 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-slate-800 transform transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-purple-500/30"
             >
               Sign In

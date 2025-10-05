@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
 import { Brain, LayoutDashboard, User, LogOut, Menu, X } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const Sidebar = ({ currentPage = 'dashboard' }) => {
+
+  const navigate = useNavigate
   const [isOpen, setIsOpen] = useState(false);
 
   const menuItems = [
@@ -12,6 +15,8 @@ const Sidebar = ({ currentPage = 'dashboard' }) => {
   const handleLogout = () => {
     // Add your logout logic here
     console.log('Logging out...');
+    navigate('/login');
+
   };
 
   const MenuItem = ({ item, isActive }) => (
