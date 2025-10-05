@@ -118,7 +118,7 @@ const Register = () => {
             Create Account
           </h2>
           <p className="text-center text-slate-400 mb-8 text-sm">
-            Join the space health network
+            Join the AstroGuard network
           </p>
 
           {/* Form Fields */}
@@ -253,7 +253,7 @@ const Register = () => {
 
         {/* Footer text */}
         <p className="text-center text-slate-500 text-xs mt-6">
-          Space Health Care System • Secure Authentication
+          AstroGuard Health Care System • Secure Authentication
         </p>
       </div>
     </div>
